@@ -19,6 +19,14 @@ host = "127.0.0.1"
 port = 5000
 debug = False
 
+def verify_login(func):
+    def decorator(*args, **kwargs):
+        session = request.headers.get('session')
+        if(not UserLogins.verify_session(session)):
+            return abort(401, description="Unauthorized")
+        return func(*args, **kwargs)
+    decorator.__name__ = func.__name__
+    return decorator
 
 #########
 # BASIC #
@@ -40,8 +48,14 @@ def api_login():
     return 404 # wrapped_api_login(request)
 
 @app.route("/api/download", methods=['GET'])
+@verify_login
 def api_download():
-    pass
+    return "Hello"
+
+@app.route("/api/upload", methods=['POST'])
+@verify_login
+def api_upload():
+    return "Hello"
 
 
 ##########
@@ -50,9 +64,6 @@ def api_download():
 
 @app.before_request
 def limit_remote_addr():
-
-    #if request.remote_addr not in trusted_ips:
-    #    abort(404)  # Not Found
     pass
 
 @app.after_request

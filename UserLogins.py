@@ -86,7 +86,7 @@ def user_login(username, hashed_password):
     return encoded_jwt
     
 
-def verify_session(username,session_cookie):
+def verify_session(session_cookie):
     global client
     if(client == None):
         client = login_mongodb()
@@ -96,22 +96,23 @@ def verify_session(username,session_cookie):
 
     if(user_session):
         session = jwt.decode(user_session['session_cookie'], JWT_SECRET, algorithms=["HS256"])
-        if(session['username'] != username):
-            return False
+
         if(session['expiration'] <= int( datetime.datetime.now().strftime("%Y%m%d%H%M%S") )):
             return False
         return True
     else:
         return False
 
-import hashlib
-# password = "Leonardo*1962Aa0800832"
-# hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-# print(find_user("sheild", hashed_password))
-# print(find_user("sheild", hashed_password))
 
-test_password = "test123"
-hashed_test = hashlib.sha256(test_password.encode('utf-8')).hexdigest()
-print(find_user("test",hashed_test))
-#print(user_login("test",hashed_test))
-print(verify_session("test","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJleHBpcmF0aW9uIjoyMDI0MDMxMzE3MTcxMSwibm9uY2UiOiJhMTg0NzQ5ZjFjY2MwMzQxY2ViYWVlOTM2N2ZmNWY0YzFmZDMxYjU5MGNjYzM3MjQ4YTJlZDE1OTc4NTAwZjMxIn0.APOa0r9UF8uHOpNjtI8wsRhiKGXaOrT911ff8lTY1x4"))
+if __name__ == '__main__':
+    import hashlib
+    # password = "Leonardo*1962Aa0800832"
+    # hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    # print(find_user("sheild", hashed_password))
+    # print(find_user("sheild", hashed_password))
+
+    test_password = "test123"
+    hashed_test = hashlib.sha256(test_password.encode('utf-8')).hexdigest()
+    print(find_user("test",hashed_test))
+    #print(user_login("test",hashed_test))
+    print(verify_session("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJleHBpcmF0aW9uIjoyMDI0MDMxNjE2NDExNywibm9uY2UiOiJlZTA0MTNlODNjNTUwNzlhYWU1NzYwNTRmMGVmY2IzMTBmOTMyMDRmZGNhYzZhNDU4MDlhYTZlNDc1OThhNzZhIn0.qak092nzGrBFXlNOAWEhDeu_tQ0KDKajNxEDmdE0sCM"))
