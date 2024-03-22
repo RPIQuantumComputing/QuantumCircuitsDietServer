@@ -7,7 +7,7 @@ import requests
 import base64
 import os
 
-import UserLogins
+import UserLogin
 
 
 #from OpenSSL import SSL
@@ -45,7 +45,10 @@ def index():
 
 @app.route("/api/login", methods=['POST'])
 def api_login():
-    return 404 # wrapped_api_login(request)
+    username = request.body.get('username')
+    hashed_pw = request.body.get('hashed_password')
+    
+    return UserLogin.user_login(username,hashed_pw)
 
 @app.route("/api/download", methods=['GET'])
 @verify_login
