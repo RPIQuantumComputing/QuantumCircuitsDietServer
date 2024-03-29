@@ -8,6 +8,7 @@ import base64
 import os
 
 import UserLogin
+import FileTransfer
 
 
 #from OpenSSL import SSL
@@ -43,6 +44,7 @@ def favicon():
 def index():
     return "Quantum Circits"
 
+
 @app.route("/api/login", methods=['POST'])
 def api_login():
     username = request.body.get('username')
@@ -50,15 +52,28 @@ def api_login():
     
     return UserLogin.user_login(username,hashed_pw)
 
+
 @app.route("/api/download", methods=['GET'])
 @verify_login
 def api_download():
-    return "Hello"
+    session = request.headers.get('session')
+
+    username = UserLogin.get_username_from_session(session)
+    file_name = request.body.get('file_name')
+
+    return FileTransfer.get_file(username,fole_name)
+
 
 @app.route("/api/upload", methods=['POST'])
 @verify_login
 def api_upload():
-    return "Hello"
+
+    session = request.headers.get('session')
+
+    username = UserLogin.get_username_from_session(session)
+    circuit_json = request.body.get('circuit_json')
+    
+    return FileTransfer.add_file(username,circuit_json)
 
 
 ##########

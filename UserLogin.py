@@ -101,6 +101,12 @@ def verify_session(session_cookie):
         return False
 
 
+def get_username_from_session(session_cookie):
+    
+    session = jwt.decode(user_session['session_cookie'], JWT_SECRET, algorithms=["HS256"])
+
+    return session['username']
+
 if __name__ == '__main__':
     import hashlib
     # password = "Leonardo*1962Aa0800832"
