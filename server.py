@@ -23,7 +23,7 @@ debug = False
 def verify_login(func):
     def decorator(*args, **kwargs):
         session = request.headers.get('session')
-        if(not UserLogins.verify_session(session)):
+        if(not UserLogin.verify_session(session)):
             return abort(401, description="Unauthorized")
         return func(*args, **kwargs)
     decorator.__name__ = func.__name__
@@ -47,9 +47,9 @@ def index():
 
 @app.route("/api/login", methods=['POST'])
 def api_login():
-    username = request.body.get('username')
-    hashed_pw = request.body.get('hashed_password')
-    
+    username = request.json.get('username')
+    hashed_pw = request.json.get('password')
+    print(username,hashed_pw)
     return UserLogin.user_login(username,hashed_pw)
 
 
@@ -59,9 +59,10 @@ def api_download():
     session = request.headers.get('session')
 
     username = UserLogin.get_username_from_session(session)
-    file_name = request.body.get('file_name')
+    file_owner_name = request.args.get('file_owner') # For Professors/Students to download other students works or public ones
+    file_name = request.args.get('file_name')
 
-    return FileTransfer.get_file(username,fole_name)
+    return FileTransfer.get_file(username,file_name)
 
 
 @app.route("/api/upload", methods=['POST'])
@@ -73,7 +74,12 @@ def api_upload():
     username = UserLogin.get_username_from_session(session)
     circuit_json = request.body.get('circuit_json')
     
-    return FileTransfer.add_file(username,circuit_json)
+    successful_upload = FileTransfer.add_file(username,circuit_json)
+
+    if(successful_upload):
+        return 200
+    else:
+        return 404
 
 
 ##########

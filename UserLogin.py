@@ -46,10 +46,11 @@ def find_user(username, hashed_password):
     global client
     if(client == None):
         client = login_mongodb()
+
     db = client["DietQuantumCircuits"]
     user_collection = db["credentials"]
     user_data = user_collection.find_one({"username": username})
-    
+    print(user_data)
     if user_data:
         if(user_data["hash_password"] == hashed_password):
             return user_data
@@ -58,15 +59,9 @@ def find_user(username, hashed_password):
         return None
 
 def user_login(username, hashed_password):
-    global client
-    if(client == None):
-        client = login_mongodb()
-    db = client["DietQuantumCircuits"]
 
     if(find_user(username,hashed_password) == None):
-        return None
-
-    user_sessions = db["user_sessions"]
+        return {'success': False}
 
     jwt_sesion = {
         'username' : username,
@@ -77,7 +72,7 @@ def user_login(username, hashed_password):
 
     encoded_jwt = jwt.encode(jwt_sesion, JWT_SECRET, algorithm="HS256")
 
-    return encoded_jwt
+    return {"session":encoded_jwt, "username": username, "success":True}
     
 
 def verify_session(session_cookie):
@@ -103,7 +98,7 @@ def verify_session(session_cookie):
 
 def get_username_from_session(session_cookie):
     
-    session = jwt.decode(user_session['session_cookie'], JWT_SECRET, algorithms=["HS256"])
+    session = jwt.decode(session['session_cookie'], JWT_SECRET, algorithms=["HS256"])
 
     return session['username']
 
@@ -116,6 +111,7 @@ if __name__ == '__main__':
 
     test_password = "test123"
     hashed_test = hashlib.sha256(test_password.encode('utf-8')).hexdigest()
-    print(find_user("test",hashed_test))
+    add_user("test",hashed_test)
+    #print(find_user("test",hashed_test))
     #print(user_login("test",hashed_test))
     print(verify_session("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJleHBpcmF0aW9uIjoyMDI0MDMxNjE2NDExNywibm9uY2UiOiJlZTA0MTNlODNjNTUwNzlhYWU1NzYwNTRmMGVmY2IzMTBmOTMyMDRmZGNhYzZhNDU4MDlhYTZlNDc1OThhNzZhIn0.qak092nzGrBFXlNOAWEhDeu_tQ0KDKajNxEDmdE0sCM"))

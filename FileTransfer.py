@@ -54,5 +54,7 @@ def add_file(username, file_name, file_data):
     newvalues = { "$set": file_data }
     
     circuit_files.update_one(filter, newvalues)
+
+    return True
     
     
